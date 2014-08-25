@@ -12,13 +12,13 @@ public class Main {
 		Logger logger = LoggerFactory.getLogger("com.epam.mapper.Main");
 		logger.debug("Main");
 		
-		Class fromClass = FromClass.class;
-		
 		FromClass example = new FromClass();
 		example.id = "22";
 		
 		ToClass tc = Mapper.format(example);
+		example.id= "3213";
 		System.out.println(tc.userId);
+		System.out.println(example.id);
 			
 	}
 	

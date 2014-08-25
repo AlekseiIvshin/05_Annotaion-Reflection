@@ -8,19 +8,12 @@ import java.lang.reflect.TypeVariable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
-import com.epam.annotation.FieldModifier;
-import com.epam.annotation.FieldModifiers;
 import com.epam.annotation.FieldName;
-import com.epam.annotation.FieldType;
 import com.epam.examples.FromClass;
 import com.epam.examples.ToClass;
 
 public class Mapper {
 
-	
 	public static void showClassMap(Class<?> toMap){
 		// Get class name and modifiers
 		System.out.printf("Class:%n%s%n",toMap.getCanonicalName());
