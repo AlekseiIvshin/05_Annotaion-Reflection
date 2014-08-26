@@ -3,6 +3,9 @@ package mapper;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import ch.qos.logback.classic.LoggerContext;
+import ch.qos.logback.core.util.StatusPrinter;
+import classexamples.FA;
 import classexamples.FromClass;
 import classexamples.ToClass;
 
@@ -14,14 +17,19 @@ public class Main {
 	
 	public static void main(String[] args) {
 		
+		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
+		StatusPrinter.print(lc);
+		
 		logger.info("Entering application.");
 		
 		FromClass example = new FromClass();
-		example.id = "22";
+		example.setId("rootId");
 		example.name = "Test";
 		example.lastName = "Elephant";
+		example.fa = new FA();
+		example.fa.setId("fa.id");
 		logger.info("In: "+example.toString());
-		ToClass tc = Mapper.format(example);
+		Object tc = Mapper.format(example);
 		if(tc != null){
 			logger.info("Out: "+tc.toString());
 		} else {

@@ -14,10 +14,10 @@
 	</appender>
 	
 	<logger name="mapper" level="INFO"/>
-	<logger name="mapper.Mapper" level="DEBUG"/>
+	<logger name="mapper.Mapper" level="TRACE"/>
 	
 	<root level="debug">
-		<appender-ref ref="STDOUT"/>
 		<appender-ref ref="FILE"/>
+		<appender-ref ref="STDOUT"/>
 	</root>
 </configuration>
