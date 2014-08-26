@@ -12,8 +12,6 @@ public class FA {
 	public String getId(){
 		return id;
 	}
-	
-	private FA fa;
 
 	public void setId(String id){
 		this.id = id;
