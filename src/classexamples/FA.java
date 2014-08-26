@@ -13,6 +13,7 @@ public class FA {
 		return id;
 	}
 	
+	private FA fa;
 
 	public void setId(String id){
 		this.id = id;

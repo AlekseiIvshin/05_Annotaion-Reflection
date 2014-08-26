@@ -19,6 +19,6 @@ public class ToClass {
 		
 	@Override
 	public String toString() {
-		return super.toString()+": ["+userId+", "+userName+", "+userLastName+","+ta.toString()+"]";
+		return super.toString()+": ["+userId+", "+userName+", "+userLastName+","+(ta ==null? "null":ta.toString())+"]";
 	}
 }

@@ -1,6 +1,6 @@
 package classexamples;
 
-public class TA {
+public abstract class TA {
 
 	private String id;
 	

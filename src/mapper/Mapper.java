@@ -20,18 +20,21 @@ public class Mapper {
 		Class<?> fromClass = fromObj.getClass();
 		
 		logger.info("Starting mapping: class {}",fromClass);
-		
-		Class<?> toClass = getTargetClass(fromClass);
-		
-		Object result;
-		try {
-			result = toClass.newInstance();
-		} catch (InstantiationException | IllegalAccessException e1) {
-			logger.error("Error on create new instance of {}",toClass);
+		if(checkFieldsHaveThisClass(fromClass)){
+			logger.error("Class {} contains itself",fromClass.getName());
 			return null;
 		}
 		
-		Field[] fields =fromClass.getDeclaredFields();
+		Class<?> toClass = getTargetClass(fromClass);
+		Object result;
+		try {
+			result = toClass.newInstance();
+		} catch (InstantiationException | IllegalAccessException | NullPointerException e1) {
+			logger.error("Error on create new instance of {}: {}",toClass.getName(), e1.toString());
+			return null;
+		}
+		
+		Field[] fields = fromClass.getDeclaredFields();
 
 		for(Field fromField: fields){
 			String name = getTargetFieldName(fromField);
@@ -50,23 +53,67 @@ public class Mapper {
 					return null;
 				}
 				
+//				if(isMapped(fromField.getType())){
+//					logger.info("Field is mapped {}.{} -> {}.{}",fromClass.getName(),fromField.getName(),
+//							toClass.getName(),toField.getName());
+//				} else {
+//					if(toField.getType() != fromField.getType()){
+//						logger.error("{} type of field not equals {}",toField.getType(),fromField.getType());
+//						return null;
+//					}
+//				}
+				
+				
 				if(isMapped(fromField.getType())){
-					logger.info("Field is mapped {}.{} -> {}.{}",fromClass,fromField.getName(),
-							toClass,toField.getName());
-					Object value = getData(fromField,fromObj);
+					logger.info("Field is mapped {}.{} -> {}.{}",fromClass.getName(),fromField.getName(),
+							toClass.getName(),toField.getName());
+					Object value;
+					try {
+						value = getData(fromField,fromObj);
+					} catch (IllegalAccessException | IllegalArgumentException
+							| InvocationTargetException e) {
+							StackTraceElement[] trace = e.getStackTrace();
+							for(StackTraceElement ste: trace){
+								logger.trace(ste.toString());
+							}
+							logger.error(e.toString());
+							return null;
+					}
+					if(value == null){
+						logger.error("Value of {} equals NULL",fromField.getName());
+						return null;
+					}
 					Object r = format(value);
-					boolean setResult = setData(toField, result, r);
+					if(r != null ){
+						boolean setResult = setData(toField, result, r);
+						if(!setResult){
+							logger.error("Set to {}.{} value = {}",result.getClass(),fromField.getName(),value);
+						}
+					}
 					
 				} else {
 					if(toField.getType() != fromField.getType()){
 						logger.error("{} type of field not equals {}",toField.getType(),fromField.getType());
 						return null;
 					} else {
-						Object value = getData(fromField,fromObj);
-						boolean setResult = setData(toField,result,value);
-						if(value == null){
-							logger.warn("Value of {} equals NULL",toField.getName());
+						Object value;
+						try {
+							value = getData(fromField,fromObj);
+						} catch (IllegalAccessException | IllegalArgumentException
+								| InvocationTargetException e) {
+								StackTraceElement[] trace = e.getStackTrace();
+								for(StackTraceElement ste: trace){
+									logger.trace(ste.toString());
+								}
+								logger.error(e.toString());
+								return null;
 						}
+						if(value == null){
+							logger.error("Value of {} equals NULL",fromField.getName());
+							return null;
+						}
+						boolean setResult = setData(toField,result,value);
+						
 						if(!setResult){
 							logger.error("Set to {}.{} value = {}",result.getClass(),fromField.getName(),value);
 						}
@@ -83,7 +130,7 @@ public class Mapper {
 			
 		}
 
-		logger.info("Mapping done: class {}",fromClass);
+		logger.info("Mapping done: class {}",fromClass.getName());
 		return result;
 	}
 	
@@ -136,51 +183,37 @@ public class Mapper {
 		return result;
 	}
 	
-	
-	private static Object getData(Field field,Object obj){
+	private static Object getData(Field field,Object obj) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 		logger.info("Get data {}.{}",obj.getClass(),field.getName());
-		Object result = null;
-		
+				
 		try {
-			result = field.get(obj);
+			return getDataFromField(field, obj);
 		} catch (IllegalArgumentException | IllegalAccessException e) {
-			result = getDataUseGetter(field,obj);
-			if(result == null){
-				StackTraceElement[] trace = e.getStackTrace();
-				for(StackTraceElement ste: trace){
-					logger.trace(ste.toString());
-				}
-				logger.error(e.toString());
-			}
+			logger.info("Field is inaccessible");
 		}
 		
-		logger.info("Result = "+result);
-		return result;
+		return getDataUseGetter(field, obj);
 	}
 	
-	private static Object getDataUseGetter(Field field,Object obj){
+	private static Object getDataFromField(Field field,Object obj) throws IllegalArgumentException, IllegalAccessException{
+
+		logger.info("Get from field",obj.getClass(),field.getName());
+		return  field.get(obj);
+	}
+	
+	private static Object getDataUseGetter(Field field,Object obj) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 		logger.info("Get data (use getter) from field {}",field.getName());
 		Class<?> c = obj.getClass();
 		String getterName = "get"+field.getName();
 		Method[] methods = c.getDeclaredMethods();
-		
-		Object result = null; 
-		
+				
 		for(Method m: methods){
 			if(m.getName().equalsIgnoreCase(getterName)){
-				try {
-					result = m.invoke(obj);
-				} catch (IllegalAccessException | IllegalArgumentException
-						| InvocationTargetException e) {
-					StackTraceElement[] trace = e.getStackTrace();
-					for(StackTraceElement ste: trace){
-						logger.trace(ste.toString());
-					}
-					logger.error(e.toString());
-				}
+				return m.invoke(obj);
 			}
 		}
-		return result;
+		
+		return null;
 	}
 	
 	private static String getTargetFieldName(Field fromField){
@@ -218,5 +251,15 @@ public class Mapper {
 			}
 		}
 		return c;
+	}
+	
+	private static boolean checkFieldsHaveThisClass(Class<?> thisClass){
+		Field[] toClassFields = thisClass.getDeclaredFields();
+		for(Field tf: toClassFields){
+			if(tf.getType().equals(thisClass)){
+				return true;
+			}
+		}
+		return false;
 	}
 }

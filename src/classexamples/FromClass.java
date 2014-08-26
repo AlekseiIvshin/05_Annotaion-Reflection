@@ -18,9 +18,9 @@ public class FromClass {
 	@FieldName("ta")
 	public FA fa;
 	
-	public String getId(){
-		return id;
-	}
+//	public String getId(){
+//		return id;
+//	}
 	
 	public void setId(String id){
 		this.id = id;
@@ -28,6 +28,6 @@ public class FromClass {
 	
 	@Override
 	public String toString() {
-		return super.toString()+": ["+id+", "+name+", "+lastName+","+fa.toString()+"]";
+		return super.toString()+": ["+id+", "+name+", "+lastName+","+(fa ==null? "null":fa.toString())+"]";
 	}
 }
