@@ -9,6 +9,8 @@ public class FA {
 	@FieldName("id")
 	private String id;
 	
+	public int number;
+	
 	public String getId(){
 		return id;
 	}
@@ -19,6 +21,6 @@ public class FA {
 	
 	@Override
 	public String toString() {
-		return id;
+		return "["+id+","+number+"]";
 	}
 }

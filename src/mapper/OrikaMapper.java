@@ -10,7 +10,7 @@ public class OrikaMapper implements Mapper{
 
 	
 	@Override
-	public Object format(Object fromClass) {
+	public Object map(Object fromClass) {
 		MapperFactory mapperFactory = new DefaultMapperFactory.Builder().build();
 		
 		mapperFactory.classMap(FromClass.class,ToClass.class )

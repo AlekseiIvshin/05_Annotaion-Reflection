@@ -2,5 +2,5 @@ package mapper;
 
 public interface Mapper {
 
-	public Object format(Object fromClass);
+	public Object map(Object fromClass);
 }

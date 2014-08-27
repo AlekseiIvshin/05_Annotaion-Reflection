@@ -14,7 +14,7 @@ public class MyMapper implements Mapper{
 
 	final static Logger logger = LoggerFactory.getLogger(MyMapper.class);
 	
-	public Object format(Object fromObj){
+	public Object map(Object fromObj){
 		Class<?> fromClass = fromObj.getClass();
 		
 		logger.info("Starting mapping: class {}",fromClass);
@@ -35,6 +35,10 @@ public class MyMapper implements Mapper{
 		Field[] fields = fromClass.getDeclaredFields();
 
 		for(Field fromField: fields){
+			if(!isMapped(fromField)){
+				continue;
+			}
+			
 			String name = getTargetFieldName(fromField);
 
 			Field toField = null;
@@ -80,7 +84,7 @@ public class MyMapper implements Mapper{
 				}
 				
 				if(isMapped){
-					Object r = format(valueForField);
+					Object r = map(valueForField);
 					if(r != null ){
 						boolean setResult = DataSetter.setData(toField, result, r);
 						if(!setResult){
@@ -129,6 +133,11 @@ public class MyMapper implements Mapper{
 			}
 		}
 		return false;
+	}
+	
+	private static boolean isMapped(Field field){
+		FieldName fieldName = (FieldName) field.getAnnotation(FieldName.class);
+		return fieldName != null;
 	}
 
 	private static Class<?> getTargetClass(Class<?> fromClass){

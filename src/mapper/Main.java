@@ -25,6 +25,7 @@ public class Main {
 		Object myMapper = useMyMapper(example);
 		Object orikaMapper = useOrika(example);
 		
+		logger.info("*** Compare results ***");
 		if(myMapper != null){
 			logger.info("My Mapper Out: "+myMapper.toString());
 		} else {
@@ -46,7 +47,7 @@ public class Main {
 		logger.info("*** Start use my mapper ***");
 		logger.info("In: "+fromClass.toString());
 		Mapper m = new MyMapper();
-		Object result = m.format(fromClass);
+		Object result = m.map(fromClass);
 		logger.info("*** End use my mapper ***");	
 		return result;
 	}
@@ -55,7 +56,7 @@ public class Main {
 		logger.info("*** Start use orika ***");
 		logger.info("In: "+fromClass.toString());
 		Mapper m = new OrikaMapper();
-		Object result = m.format(fromClass);
+		Object result = m.map(fromClass);
 		logger.info("*** End use orika ***");
 		return result;
 	}
@@ -68,6 +69,7 @@ public class Main {
 		example.lastName = "Elephant";
 		example.fa = new FA();
 		example.fa.setId("fa.id");
+		example.fa.number = 100;
 		logger.info(example.toString());
 		return example;
 	}
