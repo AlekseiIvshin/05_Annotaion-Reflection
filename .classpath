@@ -6,5 +6,6 @@
 	<classpathentry kind="lib" path="C:/Users/Aleksei_Ivshin@epam.com/Downloads/logback-1.1.2/logback-1.1.2/logback-core-1.1.2.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Aleksei_Ivshin@epam.com/Downloads/slf4j-1.7.7/slf4j-1.7.7/slf4j-api-1.7.7.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Aleksei_Ivshin@epam.com/Downloads/logback-1.1.2/logback-1.1.2/logback-classic-1.1.2.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Aleksei_Ivshin@epam.com/Downloads/orika-core-1.4.5.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

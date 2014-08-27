@@ -7,7 +7,6 @@ import ch.qos.logback.classic.LoggerContext;
 import ch.qos.logback.core.util.StatusPrinter;
 import classexamples.FA;
 import classexamples.FromClass;
-import classexamples.ToClass;
 
 
 
@@ -19,33 +18,47 @@ public class Main {
 		
 		LoggerContext lc = (LoggerContext) LoggerFactory.getILoggerFactory();
 		StatusPrinter.print(lc);
-		
+
 		logger.info("Entering application.");
+		Object example = initExampleClass();
+		useMyMapper(example);
+		useOrika(example);
+		logger.info("Exiting application.");
+	}
+	
+	
+	private static void useMyMapper(Object fromClass){
+		logger.info("*** Start use my mapper ***");
 		
+		
+		logger.info("In: "+fromClass.toString());
+		Object tc = MyMapper.format(fromClass);
+		if(tc != null){
+			logger.info("Out: "+tc.toString());
+		} else {
+			logger.info("Mapping has some errors.");
+		}
+		logger.info("*** End use my mapper ***");	
+	}
+	
+	private static void useOrika(Object fromClass){
+		logger.info("*** Start use orika ***");
+		
+		
+		
+		logger.info("*** End use orika ***");	
+	}
+	
+	private static Object initExampleClass(){
+		logger.info("*** Init example class ***");
 		FromClass example = new FromClass();
 		example.setId("rootId");
 		example.name = "Test";
 		example.lastName = "Elephant";
 		example.fa = new FA();
 		example.fa.setId("fa.id");
-		logger.info("In: "+example.toString());
-		Object tc = Mapper.format(example);
-		if(tc != null){
-			logger.info("Out: "+tc.toString());
-		} else {
-			logger.info("Mapping has some errors.");
-		}
-		
-		logger.info("Exiting application.");	
-	}
-	
-	private static String getParam(String[] args, String key){
-		for(int i = 0; i < args.length-1; i+=2){
-			if(args[i].equalsIgnoreCase(key)){
-				return args[i+1];
-			}
-		}
-		return "";
+		logger.info(example.toString());
+		return example;
 	}
 
 }

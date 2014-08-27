@@ -7,17 +7,31 @@ import java.lang.reflect.Method;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+/**
+ * Class for hidden process of getting data from field
+ * @author Aleksei_Ivshin
+ *
+ */
 public class DataGetter   {
 
 	final static Logger logger = LoggerFactory.getLogger(DataGetter.class);
 	
+	/**
+	 * Get data from field
+	 * @param field target field 
+	 * @param obj object that contain field
+	 * @return data
+	 * @throws IllegalAccessException
+	 * @throws IllegalArgumentException
+	 * @throws InvocationTargetException
+	 */
 	public static Object getData(Field field,Object obj) throws IllegalAccessException, IllegalArgumentException, InvocationTargetException{
 		logger.info("Get data {}.{}",obj.getClass(),field.getName());
 				
 		try {
 			return getDataFromField(field, obj);
 		} catch (IllegalArgumentException | IllegalAccessException e) {
-			logger.info("Field is inaccessible");
+			logger.info("Field {}.{} is inaccessible for 'get' operations",obj.getClass(),field.getName());
 		}
 		
 		return getDataUseGetter(field, obj);

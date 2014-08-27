@@ -10,9 +10,9 @@ import org.slf4j.LoggerFactory;
 import annotation.ClassTarget;
 import annotation.FieldName;
 
-public class Mapper {
+public class MyMapper {
 
-	final static Logger logger = LoggerFactory.getLogger(Mapper.class);
+	final static Logger logger = LoggerFactory.getLogger(MyMapper.class);
 	
 	public static Object format(Object fromObj){
 		Class<?> fromClass = fromObj.getClass();
@@ -57,15 +57,15 @@ public class Mapper {
 					logger.info("Field is mapped {}.{} -> {}.{}",fromClass.getName(),fromField.getName(),
 							toClass.getName(),toField.getName());
 				} else {
-					if(toField.getType() != fromField.getType()){
+					if(!toField.getType().equals(fromField.getType())){
 						logger.error("{} type of field not equals {}",toField.getType(),fromField.getType());
 						return null;
 					}
 				}
 				
-				Object value;
+				Object valueForField;
 				try {
-					value = DataGetter.getData(fromField,fromObj);
+					valueForField = DataGetter.getData(fromField,fromObj);
 				} catch (IllegalAccessException | IllegalArgumentException
 						| InvocationTargetException e) {
 						StackTraceElement[] trace = e.getStackTrace();
@@ -75,24 +75,23 @@ public class Mapper {
 						logger.error(e.toString());
 						return null;
 				}
-				if(value == null){
-					logger.error("Value of {} equals NULL",fromField.getName());
-					return null;
+				if(valueForField == null){
+					logger.warn("Value of {} equals NULL",fromField.getName());
 				}
 				
 				if(isMapped){
-					Object r = format(value);
+					Object r = format(valueForField);
 					if(r != null ){
 						boolean setResult = DataSetter.setData(toField, result, r);
 						if(!setResult){
-							logger.error("Set to {}.{} value = {}",result.getClass(),fromField.getName(),value);
+							logger.error("Set to {}.{} value = {}",result.getClass(),fromField.getName(),valueForField);
 						}
 					}
 				} else {
-					boolean setResult = DataSetter.setData(toField,result,value);
+					boolean setResult = DataSetter.setData(toField,result,valueForField);
 					
 					if(!setResult){
-						logger.error("Set to {}.{} value = {}",result.getClass(),fromField.getName(),value);
+						logger.error("Set to {}.{} value = {}",result.getClass(),fromField.getName(),valueForField);
 					}
 				}
 				
