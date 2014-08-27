@@ -21,32 +21,43 @@ public class Main {
 
 		logger.info("Entering application.");
 		Object example = initExampleClass();
-		useMyMapper(example);
-		useOrika(example);
+		
+		Object myMapper = useMyMapper(example);
+		Object orikaMapper = useOrika(example);
+		
+		if(myMapper != null){
+			logger.info("My Mapper Out: "+myMapper.toString());
+		} else {
+			logger.info("My Mapping has some errors.");
+		}
+		
+		if(orikaMapper != null){
+			logger.info("Orika Mapper Out: "+orikaMapper.toString());
+		} else {
+			logger.info("Orika Mapping has some errors.");
+		}
+		
+		
 		logger.info("Exiting application.");
 	}
 	
 	
-	private static void useMyMapper(Object fromClass){
+	private static Object useMyMapper(Object fromClass){
 		logger.info("*** Start use my mapper ***");
-		
-		
 		logger.info("In: "+fromClass.toString());
-		Object tc = MyMapper.format(fromClass);
-		if(tc != null){
-			logger.info("Out: "+tc.toString());
-		} else {
-			logger.info("Mapping has some errors.");
-		}
+		Mapper m = new MyMapper();
+		Object result = m.format(fromClass);
 		logger.info("*** End use my mapper ***");	
+		return result;
 	}
 	
-	private static void useOrika(Object fromClass){
+	private static Object useOrika(Object fromClass){
 		logger.info("*** Start use orika ***");
-		
-		
-		
-		logger.info("*** End use orika ***");	
+		logger.info("In: "+fromClass.toString());
+		Mapper m = new OrikaMapper();
+		Object result = m.format(fromClass);
+		logger.info("*** End use orika ***");
+		return result;
 	}
 	
 	private static Object initExampleClass(){

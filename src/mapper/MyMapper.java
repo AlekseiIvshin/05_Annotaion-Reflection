@@ -10,11 +10,11 @@ import org.slf4j.LoggerFactory;
 import annotation.ClassTarget;
 import annotation.FieldName;
 
-public class MyMapper {
+public class MyMapper implements Mapper{
 
 	final static Logger logger = LoggerFactory.getLogger(MyMapper.class);
 	
-	public static Object format(Object fromObj){
+	public Object format(Object fromObj){
 		Class<?> fromClass = fromObj.getClass();
 		
 		logger.info("Starting mapping: class {}",fromClass);
