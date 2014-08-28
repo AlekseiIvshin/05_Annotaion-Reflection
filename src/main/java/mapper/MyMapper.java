@@ -24,14 +24,15 @@ public class MyMapper implements Mapper{
 		}
 		
 		Class<?> toClass = getTargetClass(fromClass);
+		if(toClass == null){
+			logger.error("Error on create new instance type of class NULL");
+			return null;
+		}
 		Object result;
 		try {
 			result = toClass.newInstance();
 		} catch (InstantiationException | IllegalAccessException e1) {
 			logger.error("Error on create new instance of {}: {}",toClass.getName(), e1.toString());
-			return null;
-		} catch (NullPointerException e2){
-			logger.error("Error on create new instance type of class NULL: ", e2.toString());
 			return null;
 		}
 		
@@ -144,20 +145,19 @@ public class MyMapper implements Mapper{
 	}
 
 	private static Class<?> getTargetClass(Class<?> fromClass){
-		Class<?> c = null;
 		Annotation[] annotations = fromClass.getAnnotations();
 		for(Annotation a: annotations){
 			if(a.annotationType().equals(ClassTarget.class)){
 				ClassTarget ct = (ClassTarget) a;
 				try {
-					c = Class.forName(ct.value());
+					return Class.forName(ct.value());
 				} catch (ClassNotFoundException e) {
 					logger.error("Target class {} for {} not founded",ct.value(),fromClass);
+					return null;
 				}
-				break;
 			}
 		}
-		return c;
+		return null;
 	}
 	
 	private static boolean checkFieldsHaveThisClass(Class<?> thisClass){
