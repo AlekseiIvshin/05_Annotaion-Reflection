@@ -9,6 +9,7 @@ public class FA {
 	@FieldName("id")
 	private String id;
 	
+	@FieldName("dNumber")
 	public int number;
 	
 	public String getId(){

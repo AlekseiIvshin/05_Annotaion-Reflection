@@ -18,8 +18,9 @@ public class MyMapper implements Mapper{
 		Class<?> fromClass = fromObj.getClass();
 		
 		logger.info("Starting mapping: class {}",fromClass);
+		
 		if(checkFieldsHaveThisClass(fromClass)){
-			logger.error("Class {} contains itself",fromClass.getName());
+			logger.error("Class {} contains itself in fields",fromClass.getName());
 			return null;
 		}
 		
@@ -28,6 +29,7 @@ public class MyMapper implements Mapper{
 			logger.error("Error on create new instance type of class NULL");
 			return null;
 		}
+		// Get result class instance
 		Object result;
 		try {
 			result = toClass.newInstance();
@@ -39,78 +41,58 @@ public class MyMapper implements Mapper{
 		Field[] fields = fromClass.getDeclaredFields();
 
 		for(Field fromField: fields){
+			
 			if(!isMapped(fromField)){
 				continue;
 			}
 			
-			String name = getTargetFieldName(fromField);
+			String targetFieldName = getTargetFieldName(fromField);
 
-			Field toField = null;
-			try {
-				Field[] toClassFields = toClass.getDeclaredFields();
-				for(Field tf: toClassFields){
-					if(tf.getName().equals(name)){
-						toField = tf;
-						break;
-					}
-				}
-				if(toField == null){
-					logger.error("Not founded {}.{}",toClass,name);
-					return null;
-				}
-				
-				boolean isMapped = isMapped(fromField.getType());
-				
-				if(isMapped){
-					logger.info("Field is mapped {}.{} -> {}.{}",fromClass.getName(),fromField.getName(),
-							toClass.getName(),toField.getName());
-				} else {
-					if(!toField.getType().equals(fromField.getType())){
-						logger.error("{} type of field not equals {}",toField.getType(),fromField.getType());
-						return null;
-					}
-				}
-				
-				Object valueForField;
-				try {
-					valueForField = DataGetter.getData(fromField,fromObj);
-				} catch (IllegalAccessException | IllegalArgumentException
-						| InvocationTargetException e) {
-						StackTraceElement[] trace = e.getStackTrace();
-						for(StackTraceElement ste: trace){
-							logger.trace(ste.toString());
-						}
-						logger.error(e.toString());
-						return null;
-				}
-				if(valueForField == null){
-					logger.warn("Value of {} equals NULL",fromField.getName());
-				}
-				
-				if(isMapped){
-					Object r = map(valueForField);
-					if(r != null ){
-						boolean setResult = DataSetter.setData(toField, result, r);
-						if(!setResult){
-							logger.error("Set to {}.{} value = {}",result.getClass(),fromField.getName(),valueForField);
-						}
-					}
-				} else {
-					boolean setResult = DataSetter.setData(toField,result,valueForField);
-					
-					if(!setResult){
-						logger.error("Set to {}.{} value = {}",result.getClass(),fromField.getName(),valueForField);
-					}
-				}
-				
-			} catch (SecurityException e) {
-				StackTraceElement[] trace = e.getStackTrace();
-				for(StackTraceElement ste: trace){
-					logger.trace(ste.toString());
-				}
-				logger.error(e.toString());
+			Field toField = getTargetField(toClass,targetFieldName);
+			
+			if(toField == null){
+				logger.error("Field not found: {}.{}",toClass,targetFieldName);
 				return null;
 			}
+			
+			boolean fieldClassIsMapped = isMapped(fromField.getType());
+			
+			if(fieldClassIsMapped){
+				logger.info("Field is mapped {}.{} -> {}.{}",
+						fromClass.getName(),fromField.getName(),
+						toClass.getName(),toField.getName());
+			} else {
+				if(!toField.getType().equals(fromField.getType())){
+					logger.error("{} type of field not equals {}",
+							toField.getType(),fromField.getType());
+					return null;
+				}
+			}
+			
+			Object valueForTargetField;
+			try {
+				valueForTargetField = DataGetter.getData(fromField,fromObj);
+			} catch (IllegalAccessException | IllegalArgumentException
+					| InvocationTargetException e) {
+					StackTraceElement[] trace = e.getStackTrace();
+					for(StackTraceElement ste: trace){
+						logger.trace(ste.toString());
+					}
+					logger.error(e.toString());
+					return null;
+			}
+			
+			if(valueForTargetField == null){
+				logger.warn("Value of {} equals NULL",fromField.getName());
+				continue;
+			}
+			
+			boolean setResult = setData(toField,result,valueForTargetField,fieldClassIsMapped);
+			
+			if(!setResult){
+				logger.error("Set to {}.{} value = {}",result.getClass(),fromField.getName(),valueForTargetField);
+			}
+			
 			
 		}
 
@@ -118,14 +100,18 @@ public class MyMapper implements Mapper{
 		return result;
 	}
 	
-	
+	/**
+	 * Get target filed name from annotation
+	 * @param fromField field that have annotation FieldName
+	 * @return target field name
+	 */
 	private static String getTargetFieldName(Field fromField){
 		FieldName fieldName = (FieldName) fromField.getAnnotation(FieldName.class);
 		return fieldName != null? fieldName.value(): fromField.getName();
 	}
 
 	/**
-	 * Check class on mapping to some class
+	 * Check class has annotation for mapping
 	 * @param Checked class
 	 * @return Mapping target class
 	 */
@@ -139,11 +125,21 @@ public class MyMapper implements Mapper{
 		return false;
 	}
 	
+	/** 
+	 * Check field has annotation for mapping
+	 * @param field
+	 * @return
+	 */
 	private static boolean isMapped(Field field){
 		FieldName fieldName = (FieldName) field.getAnnotation(FieldName.class);
 		return fieldName != null;
 	}
 
+	/**
+	 * Get target class from annotation
+	 * @param fromClass
+	 * @return target class
+	 */
 	private static Class<?> getTargetClass(Class<?> fromClass){
 		Annotation[] annotations = fromClass.getAnnotations();
 		for(Annotation a: annotations){
@@ -160,6 +156,11 @@ public class MyMapper implements Mapper{
 		return null;
 	}
 	
+	/**
+	 * Check on class has itself in the field (anti recursive)
+	 * @param thisClass
+	 * @return
+	 */
 	private static boolean checkFieldsHaveThisClass(Class<?> thisClass){
 		Field[] toClassFields = thisClass.getDeclaredFields();
 		for(Field tf: toClassFields){
@@ -168,5 +169,29 @@ public class MyMapper implements Mapper{
 			}
 		}
 		return false;
+	}
+	
+	private boolean setData(Field toField,Object targetObject,Object value,boolean fromFieldClassIsMapped){
+		
+		if(fromFieldClassIsMapped){
+			Object r = map(value);
+			if(r != null ){
+				return DataSetter.setData(toField, targetObject, r);
+			}
+		} else {
+			return DataSetter.setData(toField,targetObject,value);
+		}
+		
+		return false;
+	}
+	
+	private  static Field getTargetField(Class<?> targetClass,String targetFieldName){
+		Field[] toClassFields = targetClass.getDeclaredFields();
+		for(Field tf: toClassFields){
+			if(tf.getName().equals(targetFieldName)){
+				return  tf;
+			}
+		}
+		return null;
 	}
 }

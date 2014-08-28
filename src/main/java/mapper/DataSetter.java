@@ -24,20 +24,20 @@ public class DataSetter {
 	 * @param value value of data
 	 * @return 
 	 */
-	public static boolean setData(Field field, Object obj,Object value){
-		logger.info("Set data to {}.{}",obj.getClass(),field.getName());
+	public static boolean setData(Field field, Object targetObj,Object value){
+		logger.info("Set data to {}.{}",targetObj.getClass(),field.getName());
 		boolean result = false;
 		if(Modifier.isFinal(field.getModifiers())){
-			logger.error("Field {}.{} is final",obj.getClass(),field.getName());
+			logger.error("Field {}.{} is final",targetObj.getClass(),field.getName());
 			return false;
 		}
 		try {
-			field.set(obj, value);
+			field.set(targetObj, value);
 			result = true;
 		} catch (IllegalAccessException | IllegalArgumentException e) {
-			logger.info("Field {}.{} is inaccessible for 'set' operations",obj.getClass(),field.getName());
+			logger.info("Field {}.{} is inaccessible for 'set' operations",targetObj.getClass(),field.getName());
 			// if can't set to field, use setter method
-			result = setDataToSetter(field,obj,value);
+			result = setDataToSetter(field,targetObj,value);
 			if(!result){
 				StackTraceElement[] trace = e.getStackTrace();
 				for(StackTraceElement ste: trace){

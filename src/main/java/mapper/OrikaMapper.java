@@ -18,6 +18,7 @@ public class OrikaMapper implements Mapper{
 				.fieldAToB("name", "userName")
 				.fieldAToB("lastName", "userLastName")
 				.fieldAToB("fa.id", "ta.id")
+				.fieldAToB("fa.number", "ta.dNumber")
 				.register();
 		
 		MapperFacade mapper = mapperFactory.getMapperFacade();

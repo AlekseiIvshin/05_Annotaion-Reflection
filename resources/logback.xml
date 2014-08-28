@@ -7,13 +7,12 @@
 	</appender>
 	
 	<appender name="FILE" class="ch.qos.logback.core.FileAppender">
-		<file>application.log</file>
+		<file>mapper.log</file>
 		<encoder>
       		<pattern>%d{HH:mm:ss.SSS} [%thread] %-5level %logger{36} - %msg%n</pattern>
     	</encoder>		
 	</appender>
 	
-	<logger name="main.java.mapper" level="INFO"/>
 	<logger name="main.java.mapper.Mapper" level="TRACE"/>
 	
 	<root level="debug">

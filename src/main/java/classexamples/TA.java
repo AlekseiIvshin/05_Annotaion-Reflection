@@ -4,7 +4,7 @@ public class TA {
 
 	private String id;
 	
-	public double dNumber;
+	public int dNumber;
 	
 	public void setId(String id){
 		this.id = id;
