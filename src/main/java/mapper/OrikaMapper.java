@@ -1,7 +1,7 @@
-package mapper;
+package main.java.mapper;
 
-import classexamples.FromClass;
-import classexamples.ToClass;
+import main.java.classexamples.FromClass;
+import main.java.classexamples.ToClass;
 import ma.glasnost.orika.MapperFacade;
 import ma.glasnost.orika.MapperFactory;
 import ma.glasnost.orika.impl.DefaultMapperFactory;

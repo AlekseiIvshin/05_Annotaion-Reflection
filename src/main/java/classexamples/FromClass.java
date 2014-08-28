@@ -1,9 +1,9 @@
-package classexamples;
+package main.java.classexamples;
 
-import annotation.ClassTarget;
-import annotation.FieldName;
+import main.java.annotation.ClassTarget;
+import main.java.annotation.FieldName;
 
-@ClassTarget("classexamples.ToClass")
+@ClassTarget("main.java.classexamples.ToClass")
 public class FromClass {
 
 	@FieldName("userId")

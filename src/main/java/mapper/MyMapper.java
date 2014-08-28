@@ -1,4 +1,4 @@
-package mapper;
+package main.java.mapper;
 
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Field;
@@ -7,8 +7,8 @@ import java.lang.reflect.InvocationTargetException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import annotation.ClassTarget;
-import annotation.FieldName;
+import main.java.annotation.ClassTarget;
+import main.java.annotation.FieldName;
 
 public class MyMapper implements Mapper{
 
@@ -27,8 +27,11 @@ public class MyMapper implements Mapper{
 		Object result;
 		try {
 			result = toClass.newInstance();
-		} catch (InstantiationException | IllegalAccessException | NullPointerException e1) {
+		} catch (InstantiationException | IllegalAccessException e1) {
 			logger.error("Error on create new instance of {}: {}",toClass.getName(), e1.toString());
+			return null;
+		} catch (NullPointerException e2){
+			logger.error("Error on create new instance type of class NULL: ", e2.toString());
 			return null;
 		}
 		

@@ -1,1 +1,16 @@
 apply plugin: 'java'
+apply plugin: 'eclipse'
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+	compile 'ma.glasnost.orika:orika-core:1.4.5'
+	compile 'ch.qos.logback:logback-classic:1.1.2'
+	compile 'ch.qos.logback:logback-core:1.1.2'
+	compile 'org.slf4j:slf4j-simple:1.7.7'
+	compile 'org.javassist:javassist:3.13.0-GA'
+	compile 'com.thoughtworks.paranamer:paranamer:2.7'
+	compile 'com.googlecode.concurrentlinkedhashmap:concurrentlinkedhashmap-lru:1.1'
+}

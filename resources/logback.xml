@@ -13,8 +13,8 @@
     	</encoder>		
 	</appender>
 	
-	<logger name="mapper" level="INFO"/>
-	<logger name="mapper.Mapper" level="TRACE"/>
+	<logger name="main.java.mapper" level="INFO"/>
+	<logger name="main.java.mapper.Mapper" level="TRACE"/>
 	
 	<root level="debug">
 		<appender-ref ref="FILE"/>

@@ -1,4 +1,4 @@
-package classexamples;
+package main.java.classexamples;
 
 public class TA {
 
